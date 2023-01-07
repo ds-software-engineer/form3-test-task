@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  accountapi:
+  account-api:
     image: form3tech/interview-accountapi:v1.0.0-46-gb3b6c766
     restart: on-failure
     depends_on:
@@ -21,6 +21,7 @@ services:
       - DATABASE-PASSWORD=123
     ports:
       - 8080:8080
+
   postgresql:
     image: postgres:9.5-alpine
     healthcheck:
@@ -40,3 +41,13 @@ services:
     environment:
       - SKIP_SETCAP=1
       - VAULT_DEV_ROOT_TOKEN_ID=8fb95528-57c6-422e-9722-d2147bcba8ed
+
+  integration-tests:
+    build:
+      context: ./
+      dockerfile: build/tests/integration/Dockerfile
+    depends_on:
+      - account-api
+    environment:
+      BASE_FAKE_API_URL: http://accountapi:8080/v1
+
