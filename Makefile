@@ -20,7 +20,7 @@ go_get: ## Get all project dependencies
 
 go_test_unit: ## Run unit tests only over Fake API client
 	@echo ">>> Running unit tests."
-	go test -v -tags unit -cover ./...
+	go test -v -tags unit ./...
 
 go_test_integration: ## Run integration tests over Fake API client and Fake API
 	@echo ">>> Running integration tests."

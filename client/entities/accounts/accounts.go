@@ -11,6 +11,13 @@ import (
 	"github.com/form3-test-task/client/transport"
 )
 
+// supported Account endpoints.
+const (
+	fetchAccountEndpoint  = "/organisation/accounts/%s"
+	createAccountEndpoint = "/organisation/accounts"
+	deleteAccountEndpoint = "/organisation/accounts/%s?version=%d"
+)
+
 // Accounts represents object to work with Account entity.
 type Accounts struct {
 	transport transport.HTTPProvider
@@ -26,7 +33,7 @@ func NewAccounts(transport transport.HTTPProvider) *Accounts {
 // Create creates a new Account entity.
 func (a Accounts) Create(account *objects.Account) (*objects.Account, error) {
 	body, err := a.transport.Do(
-		http.MethodPost, "/organisation/accounts", objects.CreateAccountRequest{Data: *account},
+		http.MethodPost, createAccountEndpoint, objects.CreateAccountRequest{Data: *account},
 	)
 	if err != nil {
 		return nil, errors.Wrap(err, "error creating Account object")
@@ -42,7 +49,7 @@ func (a Accounts) Create(account *objects.Account) (*objects.Account, error) {
 
 // Fetch fetches existing Account entity by its ID.
 func (a Accounts) Fetch(ID string) (*objects.Account, error) {
-	body, err := a.transport.Do(http.MethodGet, fmt.Sprintf("/organisation/accounts/%s", ID), nil)
+	body, err := a.transport.Do(http.MethodGet, fmt.Sprintf(fetchAccountEndpoint, ID), nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "error fetching Account object")
 	}
@@ -56,7 +63,7 @@ func (a Accounts) Fetch(ID string) (*objects.Account, error) {
 // Delete deletes existing Account entity by its ID and version.
 func (a Accounts) Delete(ID string, version int64) error {
 	_, err := a.transport.Do(
-		http.MethodDelete, fmt.Sprintf("/organisation/accounts/%s?version=%d", ID, version), nil,
+		http.MethodDelete, fmt.Sprintf(deleteAccountEndpoint, ID, version), nil,
 	)
 	if err != nil {
 		return errors.Wrap(err, "error creating request to delete Account object")

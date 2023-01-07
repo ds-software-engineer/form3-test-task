@@ -1,60 +1,49 @@
-# Form3 Take Home Exercise
+# Form3 Take Home Exercise - Dmitriy Suhinin(suhinin.dmitriy@gmail.com)
 
-Engineers at Form3 build highly available distributed systems in a microservices environment. Our take home test is designed to evaluate real world activities that are involved with this role. We recognise that this may not be as mentally challenging and may take longer to implement than some algorithmic tests that are often seen in interview exercises. Our approach however helps ensure that you will be working with a team of engineers with the necessary practical skills for the role (as well as a diverse range of technical wizardry). 
+### Prerequisite
+- Go 1.18
+- Makefile
+- Docker
 
-## Instructions
-The goal of this exercise is to write a client library in Go to access our fake account API, which is provided as a Docker
-container in the file `docker-compose.yaml` of this repository. Please refer to the
-[Form3 documentation](https://www.api-docs.form3.tech/api/tutorials/getting-started/create-an-account) for information on how to interact with the API. Please note that the fake account API does not require any authorisation or authentication.
+### Useful Commands
+- to run integration tests over fake client and fake API.
+```bash
+docker-compose up 
+```
+- to get the help over existing `makefile` targets.
+```bash
+make help
+```
+- to run only unit tests without fake API.
+```bash
+make go_test_unit
+```
+- to run linters over the code.
+```bash
+make lint
+```
 
-A mapping of account attributes can be found in [models.go](./models.go). Can be used as a starting point, usage of the file is not required.
+### Possible Client Improvements
+- more unit tests maybe for negative cases.
+- extend `transport` layer to support more options.
+- maybe re organize structure, re name some objects but not fully sure.
+- re think about error handling inside the `transport` layer. right now not ideal and feels a bit ugly.
+- maybe we even don't need to have `transport` layer. could be enough to configure overall client only with `base` url.
 
-If you encounter any problems running the fake account API we would encourage you to do some debugging first,
-before reaching out for help.
+### Possible API Improvements
+- will be nice if API could return an `error` object using next format:
+```json
+{
+  "code": 1233,
+  "message": "super puper error"
+}
+```
+in that case it is much easier to validate error only using `code` instead of comparing `message` value.
+- API returns in `error_message` the set of errors. Here should be different ways to improve:
+  - return always only one `error` instead of set like right now.
+  - return a bit more complicated `error` object where you can uniquely identify each error. right now everything just wrapper into `error_message` property.  
 
-## Submission Guidance
+### Strange Things 
+- official API documentation not really aligned with Fake API. I think Fake API a bit simplified.
 
-### Shoulds
 
-The finished solution **should:**
-- Be written in Go.
-- Use the `docker-compose.yaml` of this repository.
-- Be a client library suitable for use in another software project.
-- Implement the `Create`, `Fetch`, and `Delete` operations on the `accounts` resource.
-- Be well tested to the level you would expect in a commercial environment. Note that tests are expected to run against the provided fake account API.
-- Be simple and concise.
-- Have tests that run from `docker-compose up` - our reviewers will run `docker-compose up` to assess if your tests pass.
-
-### Should Nots
-
-The finished solution **should not:**
-- Use a code generator to write the client library.
-- Use (copy or otherwise) code from any third party without attribution to complete the exercise, as this will result in the test being rejected.
-    - **We will fail tests that plagiarise others' work. This includes (but is not limited to) other past submissions or open-source libraries.**
-- Use a library for your client (e.g: go-resty). Anything from the standard library (such as `net/http`) is allowed. Libraries to support testing or types like UUID are also fine.
-- Implement client-side validation.
-- Implement an authentication scheme.
-- Implement support for the fields `data.attributes.private_identification`, `data.attributes.organisation_identification`
-  and `data.relationships` or any other fields that are not included in the provided `models.go`, as they are omitted from the provided fake account API implementation.
-- Have advanced features, however discussion of anything extra you'd expect a production client to contain would be useful in the documentation.
-- Be a command line client or other type of program - the requirement is to write a client library.
-- Implement the `List` operation.
-> We give no credit for including any of the above in a submitted test, so please only focus on the "Shoulds" above.
-
-## How to submit your exercise
-
-- Include your name in the README. If you are new to Go, please also mention this in the README so that we can consider this when reviewing your exercise
-- Create a private [GitHub](https://help.github.com/en/articles/create-a-repo) repository, by copying all files you deem necessary for your submission
-- [Invite](https://help.github.com/en/articles/inviting-collaborators-to-a-personal-repository) [@form3tech-interviewer-1](https://github.com/form3tech-interviewer-1) to your private repo
-- Let us know you've completed the exercise using the link provided at the bottom of the email from our recruitment team
-
-## License
-
-Copyright 2019-2022 Form3 Financial Cloud
-
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
