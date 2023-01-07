@@ -2,13 +2,20 @@ package transport
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/pkg/errors"
 )
+
+// HTTPProvider provides HTTP transport interface.
+type HTTPProvider interface {
+	// Do makes actual HTTP request.
+	Do(method, endpoint string, data interface{}) ([]byte, error)
+}
 
 // HTTP represents HTTP transport.
 type HTTP struct {
@@ -35,8 +42,11 @@ func (t HTTP) Do(method, endpoint string, data interface{}) ([]byte, error) {
 		}
 	}
 
-	request, err := http.NewRequest(
-		method, fmt.Sprintf("%s%s", t.baseURL, endpoint), bytes.NewBuffer(serializedData),
+	request, err := http.NewRequestWithContext(
+		context.TODO(),
+		method,
+		fmt.Sprintf("%s%s", t.baseURL, endpoint),
+		bytes.NewBuffer(serializedData),
 	)
 	if err != nil {
 		return nil, errors.Wrap(err, "error creating http request")
@@ -48,8 +58,9 @@ func (t HTTP) Do(method, endpoint string, data interface{}) ([]byte, error) {
 	if response.Body == nil {
 		return nil, errors.New("response body is null")
 	}
+	//nolint:errcheck
 	defer response.Body.Close()
-	body, err := ioutil.ReadAll(response.Body)
+	body, err := io.ReadAll(response.Body)
 	if err != nil {
 		return nil, errors.Wrap(err, "error reading response body")
 	}

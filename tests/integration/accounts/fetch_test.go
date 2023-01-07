@@ -1,8 +1,9 @@
+//go:build integration
+
 package accounts
 
 import (
 	"net/http"
-	"os"
 	"testing"
 
 	"github.com/google/uuid"
@@ -11,13 +12,13 @@ import (
 
 	"github.com/form3-test-task/client"
 	"github.com/form3-test-task/client/entities/accounts/objects"
-	"github.com/form3-test-task/client/entities/transport"
+	"github.com/form3-test-task/client/transport"
 	"github.com/form3-test-task/tests/helpers"
 )
 
 // TestAccountFetch_Ok tests Fetch action happy path case.
 func TestAccountFetch_Ok(t *testing.T) {
-	fakeAPIClient := client.NewFakeAPIClient(os.Getenv("BASE_FAKE_API_URL"))
+	fakeAPIClient := client.NewFakeAPIClient()
 	// 1. create a new Account entity.
 	expectedAccount, err := fakeAPIClient.Accounts().Create(&objects.Account{
 		ID:   uuid.New().String(),
@@ -27,7 +28,7 @@ func TestAccountFetch_Ok(t *testing.T) {
 			Iban:          "FR1420041010050500013M02606",
 			Name:          []string{"Name1", "Name2"},
 			BankID:        "20041",
-			Country:       helpers.GetStringPointer("FR"),
+			Country:       helpers.GetVariablePointer("FR"),
 			BankIDCode:    "FR",
 			BaseCurrency:  "EUR",
 			AccountNumber: "0500013M026",
@@ -76,7 +77,8 @@ func TestAccountFetch_Error(t *testing.T) {
 		},
 	}
 
-	fakeAPIClient := client.NewFakeAPIClient(os.Getenv("BASE_FAKE_API_URL"))
+	fakeAPIClient := client.NewFakeAPIClient()
+	//nolint
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			_, err := fakeAPIClient.Accounts().Fetch(tt.accountID)

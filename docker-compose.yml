@@ -34,7 +34,7 @@ services:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=password
     volumes:
-      - ./scripts/db:/docker-entrypoint-initdb.d/
+      - ./build/db:/docker-entrypoint-initdb.d/
 
   vault:
     image: vault:1.6.3
@@ -49,5 +49,5 @@ services:
     depends_on:
       - account-api
     environment:
-      BASE_FAKE_API_URL: http://accountapi:8080/v1
+      BASE_FAKE_API_URL: http://account-api:8080/v1
 

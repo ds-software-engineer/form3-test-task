@@ -8,16 +8,16 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/form3-test-task/client/entities/accounts/objects"
-	"github.com/form3-test-task/client/entities/transport"
+	"github.com/form3-test-task/client/transport"
 )
 
 // Accounts represents object to work with Account entity.
 type Accounts struct {
-	transport *transport.HTTP
+	transport transport.HTTPProvider
 }
 
 // NewAccounts creates new Account instance.
-func NewAccounts(transport *transport.HTTP) *Accounts {
+func NewAccounts(transport transport.HTTPProvider) *Accounts {
 	return &Accounts{
 		transport: transport,
 	}

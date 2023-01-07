@@ -1,8 +1,9 @@
+//go:build integration
+
 package accounts
 
 import (
 	"net/http"
-	"os"
 	"testing"
 
 	"github.com/google/uuid"
@@ -11,8 +12,7 @@ import (
 
 	"github.com/form3-test-task/client"
 	"github.com/form3-test-task/client/entities/accounts/objects"
-	"github.com/form3-test-task/client/entities/transport"
-	"github.com/form3-test-task/tests/data"
+	"github.com/form3-test-task/client/transport"
 	"github.com/form3-test-task/tests/helpers"
 )
 
@@ -20,7 +20,7 @@ import (
 func TestAccountCreate_Ok(t *testing.T) {
 	accountID := uuid.New().String()
 
-	fakeAPIClient := client.NewFakeAPIClient(os.Getenv("BASE_FAKE_API_URL"))
+	fakeAPIClient := client.NewFakeAPIClient()
 	actualAccount, err := fakeAPIClient.Accounts().Create(&objects.Account{
 		ID:   accountID,
 		Type: "accounts",
@@ -29,7 +29,7 @@ func TestAccountCreate_Ok(t *testing.T) {
 			Iban:          "FR1420041010050500013M02606",
 			Name:          []string{"Name1", "Name2"},
 			BankID:        "20041",
-			Country:       helpers.GetStringPointer("FR"),
+			Country:       helpers.GetVariablePointer("FR"),
 			BankIDCode:    "FR",
 			BaseCurrency:  "EUR",
 			AccountNumber: "0500013M026",
@@ -37,22 +37,21 @@ func TestAccountCreate_Ok(t *testing.T) {
 		OrganisationID: "eb0bd6f5-c3f5-44b2-b677-acd23cdde73c",
 	})
 	assert.Nil(t, err)
-
-	expectedAccount := data.ExpectedAccountObjectAfterCreation
-
 	assert.Equal(t, accountID, actualAccount.ID)
-	assert.Equal(t, expectedAccount.Type, actualAccount.Type)
-	assert.Equal(t, expectedAccount.Attributes.Bic, actualAccount.Attributes.Bic)
-	assert.Equal(t, expectedAccount.Attributes.Name, actualAccount.Attributes.Name)
-	assert.Equal(t, expectedAccount.Attributes.BankID, actualAccount.Attributes.BankID)
-	assert.Equal(t, *expectedAccount.Attributes.Country, *actualAccount.Attributes.Country)
-	assert.Equal(t, expectedAccount.Attributes.BankIDCode, actualAccount.Attributes.BankIDCode)
-	assert.Equal(t, expectedAccount.Attributes.BaseCurrency, actualAccount.Attributes.BaseCurrency)
-	assert.Equal(t, expectedAccount.Attributes.AccountNumber, actualAccount.Attributes.AccountNumber)
-	assert.Equal(t, *expectedAccount.Version, *actualAccount.Version)
+	assert.Equal(t, "accounts", actualAccount.Type)
+	assert.Equal(t, "NWBKFR42", actualAccount.Attributes.Bic)
+	assert.Equal(t, []string{"Name1", "Name2"}, actualAccount.Attributes.Name)
+	assert.Equal(t, "20041", actualAccount.Attributes.BankID)
+	assert.Equal(t, "FR", *actualAccount.Attributes.Country)
+	assert.Equal(t, "FR", actualAccount.Attributes.BankIDCode)
+	assert.Equal(t, "EUR", actualAccount.Attributes.BaseCurrency)
+	assert.Equal(t, "0500013M026", actualAccount.Attributes.AccountNumber)
+	assert.Equal(t, int64(0), *actualAccount.Version)
 }
 
 // TestAccountCreate_Error tests all Create action error cases.
+//
+//nolint:lll
 func TestAccountCreate_Error(t *testing.T) {
 	tests := []struct {
 		name    string
@@ -131,7 +130,7 @@ func TestAccountCreate_Error(t *testing.T) {
 				OrganisationID: uuid.NewString(),
 				Type:           "accounts",
 				Attributes: &objects.AccountAttributes{
-					Country: helpers.GetStringPointer(""),
+					Country: helpers.GetVariablePointer(""),
 				},
 			},
 		},
@@ -146,14 +145,15 @@ func TestAccountCreate_Error(t *testing.T) {
 				OrganisationID: uuid.NewString(),
 				Type:           "accounts",
 				Attributes: &objects.AccountAttributes{
-					Country: helpers.GetStringPointer("FR"),
+					Country: helpers.GetVariablePointer("FR"),
 					Name:    []string{},
 				},
 			},
 		},
 	}
 
-	fakeAPIClient := client.NewFakeAPIClient(os.Getenv("BASE_FAKE_API_URL"))
+	fakeAPIClient := client.NewFakeAPIClient()
+	//nolint
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			_, err := fakeAPIClient.Accounts().Create(tt.account)
