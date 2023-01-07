@@ -39,7 +39,7 @@ make lint
 }
 ```
 in that case it is much easier to validate error only using `code` instead of comparing `message` value.
-- API returns in `error_message` the set of errors. Here should be different ways to improve:
+- in case of `error`, API returns in `error_message` the set of errors. It is a bit hard to handle them. Here could be different ways to improve:
   - return always only one `error` instead of set like right now.
   - return a bit more complicated `error` object where you can uniquely identify each error. right now everything just wrapper into `error_message` property.  
 
