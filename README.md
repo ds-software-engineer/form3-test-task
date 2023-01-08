@@ -29,6 +29,8 @@ make lint
 - maybe re organize structure, re name some objects but not fully sure.
 - re think about error handling inside the `transport` layer. right now not ideal and feels a bit ugly.
 - maybe we even don't need to have `transport` layer. could be enough to configure overall client only with `base` url.
+- logger will be useful in case when the client gets bigger.
+- passing `context` to the clinet action also could be useful to control execution time.
 
 ### Possible API Improvements
 - will be nice if API could return an `error` object using next format:
